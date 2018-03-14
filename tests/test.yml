@@ -1,5 +1,50 @@
 ---
-- hosts: localhost
-  remote_user: root
+- name: Start the Docker containers
+  hosts: localhost
+  gather_facts: false
+
+  vars_files:
+    - docker_containers.yml
+
+  vars:
+    - container_state: started
+    - container_privileged: true
+
   roles:
+    - docker
+
+  tags:
+    - docker-start
+
+
+- name: Test the PostGIS role for CentOS
+  hosts: postgis
+  become: yes
+  become_method: sudo
+
+  vars:
+    - postgis_address_standardizer_enabled: False
+
+  roles:
+    - postgresql
     - ansible-role-postgis
+
+  tags:
+    - postgis
+
+
+- name: Stop the Docker containers
+  hosts: localhost
+  gather_facts: false
+
+  vars_files:
+    - docker_containers.yml
+
+  vars:
+    - container_state: absent
+
+  roles:
+    - docker
+
+  tags:
+    - docker-stop
