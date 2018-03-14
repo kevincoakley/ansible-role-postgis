@@ -1,2 +1,125 @@
 ---
-# tasks file for ansible-role-postgis
+- name: Verify postgresql 10 is installed
+  stat:
+    path: /var/lib/pgsql/10/data/PG_VERSION
+  register: pg_version
+  failed_when: pg_version.stat.exists == False
+  changed_when: False
+
+- name: Install Extra Packages for Enterprise Linux (EPEL)
+  package:
+    name: epel-release
+    state: present
+
+- name: Install PostGIS 2.4 for postgresql 10
+  package:
+    name: postgis24_10
+    state: present
+
+- name: Get a list of postgresql extension
+  shell: psql -c "SELECT * FROM pg_extension;"
+  args:
+    executable: /bin/bash
+  register: postgresql_plugin_list
+  become: yes
+  become_user: postgres
+  become_method: sudo
+  changed_when: False
+
+- name: Enable the postgis extension
+  shell: psql -c "CREATE EXTENSION postgis;"
+  args:
+    executable: /bin/bash
+  register: enable_postgis
+  become: yes
+  become_user: postgres
+  become_method: sudo
+  failed_when: '"CREATE EXTENSION" not in enable_postgis.stdout'
+  changed_when: False
+  when:
+    - '"postgis" not in postgresql_plugin_list.stdout'
+    - postgis_enabled
+
+- name: Enable the postgis_topology extension
+  shell: psql -c "CREATE EXTENSION postgis_topology;"
+  args:
+    executable: /bin/bash
+  register: enable_postgis
+  become: yes
+  become_user: postgres
+  become_method: sudo
+  failed_when: '"CREATE EXTENSION" not in enable_postgis.stdout'
+  changed_when: False
+  when:
+    - '"postgis_topology" not in postgresql_plugin_list.stdout'
+    - postgis_topology_enabled
+
+- name: Enable the postgis_sfcgal extension
+  shell: psql -c "CREATE EXTENSION postgis_sfcgal;"
+  args:
+    executable: /bin/bash
+  register: enable_postgis
+  become: yes
+  become_user: postgres
+  become_method: sudo
+  failed_when: '"CREATE EXTENSION" not in enable_postgis.stdout'
+  changed_when: False
+  when:
+    - '"postgis_sfcgal" not in postgresql_plugin_list.stdout'
+    - postgis_sfcgal_enabled
+
+- name: Enable the fuzzystrmatch extension
+  shell: psql -c "CREATE EXTENSION fuzzystrmatch;"
+  args:
+    executable: /bin/bash
+  register: enable_postgis
+  become: yes
+  become_user: postgres
+  become_method: sudo
+  failed_when: '"CREATE EXTENSION" not in enable_postgis.stdout'
+  changed_when: False
+  when:
+    - '"fuzzystrmatch" not in postgresql_plugin_list.stdout'
+    - postgis_fuzzystrmatch_enabled
+
+- name: Enable the address_standardizer extension
+  shell: psql -c "CREATE EXTENSION address_standardizer;"
+  args:
+    executable: /bin/bash
+  register: enable_postgis
+  become: yes
+  become_user: postgres
+  become_method: sudo
+  failed_when: '"CREATE EXTENSION" not in enable_postgis.stdout'
+  changed_when: False
+  when:
+    - '"address_standardizer" not in postgresql_plugin_list.stdout'
+    - postgis_address_standardizer_enabled
+
+- name: Enable the address_standardizer_data_us extension
+  shell: psql -c "CREATE EXTENSION address_standardizer_data_us;"
+  args:
+    executable: /bin/bash
+  register: enable_postgis
+  become: yes
+  become_user: postgres
+  become_method: sudo
+  failed_when: '"CREATE EXTENSION" not in enable_postgis.stdout'
+  changed_when: False
+  when:
+    - '"address_standardizer_data_us" not in postgresql_plugin_list.stdout'
+    - postgis_address_standardizer_data_us_enabled
+
+- name: Enable the postgis_tiger_geocoder extension
+  shell: psql -c "CREATE EXTENSION postgis_tiger_geocoder;"
+  args:
+    executable: /bin/bash
+  register: enable_postgis
+  become: yes
+  become_user: postgres
+  become_method: sudo
+  failed_when: '"CREATE EXTENSION" not in enable_postgis.stdout'
+  changed_when: False
+  when:
+    - '"postgis_tiger_geocoder" not in postgresql_plugin_list.stdout'
+    - postgis_tiger_geocoder_enabled

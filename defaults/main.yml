@@ -1,2 +1,8 @@
 ---
-# defaults file for ansible-role-postgis
+postgis_enabled: True
+postgis_topology_enabled: True
+postgis_sfcgal_enabled: True
+postgis_fuzzystrmatch_enabled: True
+postgis_address_standardizer_enabled: True
+postgis_address_standardizer_data_us_enabled: True
+postgis_tiger_geocoder_enabled: True
