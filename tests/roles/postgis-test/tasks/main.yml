@@ -1,0 +1,17 @@
+---
+- name: Test if the PostGIS extensions have been enabled
+  shell: psql -c "SELECT * FROM pg_extension;"
+  args:
+    executable: /bin/bash
+  register: postgresql_plugin_list
+  become: yes
+  become_user: postgres
+  become_method: sudo
+  changed_when: False
+  failed_when:
+    - '"postgis" not in postgresql_plugin_list.stdout'
+    - '"postgis_topology" not in postgresql_plugin_list.stdout'
+    - '"postgis_sfcgal" not in postgresql_plugin_list.stdout'
+    - '"fuzzystrmatch" not in postgresql_plugin_list.stdout'
+    - '"address_standardizer_data_us" not in postgresql_plugin_list.stdout'
+    - '"postgis_tiger_geocoder" not in postgresql_plugin_list.stdout'

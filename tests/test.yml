@@ -28,6 +28,7 @@
   roles:
     - postgresql
     - ansible-role-postgis
+    - postgis-test
 
   tags:
     - postgis
